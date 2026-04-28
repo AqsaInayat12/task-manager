@@ -5,24 +5,37 @@ export default function TaskForm({ task, onSaved, onClose }) {
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [status, setStatus] = useState('Pending');
+  const [dueDate, setDueDate] = useState('');
 
   useEffect(() => {
     if (task) {
       setTitle(task.title);
       setDesc(task.description);
       setStatus(task.status);
+    
+      
+      if (task.dueDate) {
+        setDueDate(new Date(task.dueDate).toISOString().split('T')[0]);
+      }
     }
   }, [task]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const taskData = { title, description: desc, status };
+    
+  
+    const taskData = { 
+      title, 
+      description: desc, 
+      status, 
+      dueDate 
+    };
     
     try {
       if (task) {
-        await updateTask(task._id, taskData); // Update call
+        await updateTask(task._id, taskData);
       } else {
-        await createTask(taskData); // Create call
+        await createTask(taskData);
       }
       onSaved();
     } catch (err) {
@@ -56,6 +69,17 @@ export default function TaskForm({ task, onSaved, onClose }) {
           <option value="In Progress">In Progress 🔵</option>
           <option value="Completed">Completed 🟢</option>
         </select>
+
+        <div className="flex flex-col gap-1 mb-4">
+          <label className="text-purple-900 font-semibold text-sm ml-1">Due Date</label>
+          <input 
+            type="date" 
+            className="w-full p-3 bg-purple-50 border border-purple-100 rounded-xl text-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-400"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+          />
+        </div>
+
         <div className="flex gap-3">
           <button type="submit" className="flex-1 bg-purple-600 text-white py-3 rounded-xl font-bold hover:bg-purple-700 transition">
             {task ? 'Update Changes' : 'Save Task'}

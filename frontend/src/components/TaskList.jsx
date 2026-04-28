@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { getAllTasks, deleteTask } from '../services/api'; 
 import TaskForm from './TaskForm';
-import Controls from './Controls'; // Week 3 component
+import Controls from './Controls';
 
 export default function TaskList() {
   const [tasks, setTasks] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(''); // Search state
-  const [filterStatus, setFilterStatus] = useState('All'); // Filter state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('All');
 
   const fetchTasks = async () => {
     try {
@@ -37,7 +37,6 @@ export default function TaskList() {
     }
   };
 
-  // Logic to filter tasks based on search and status
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'All' || task.status === filterStatus;
@@ -45,7 +44,7 @@ export default function TaskList() {
   });
 
   return (
-    <> {/* Main Parent Wrapper */}
+    <>
       <Controls 
         tasks={tasks} 
         searchTerm={searchTerm}
@@ -56,7 +55,7 @@ export default function TaskList() {
 
       <div className="max-w-3xl mx-auto px-4 pb-20">
         <div className="flex justify-between items-center mb-10">
-          <h2 className="text-3xl font-extrabold text-purple-900">My Daily Tasks</h2>
+          <h2 className="text-3xl font-extrabold text-white">My Daily Tasks</h2>
           <button 
             onClick={() => { setEditingTask(null); setShowForm(!showForm); }}
             className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-2xl shadow-lg"
@@ -76,25 +75,37 @@ export default function TaskList() {
         )}
 
         <div className="grid gap-6">
-          {/* Use filteredTasks instead of tasks */}
           {filteredTasks.map((task) => (
-            <div key={task._id} className={`bg-white/70 p-6 rounded-3xl shadow-md border-l-[12px] flex justify-between items-center ${getStatusStyle(task.status).split(' ')[2]}`}>
-              <div>
+            <div key={task._id} className={`bg-white/90 p-6 rounded-3xl shadow-md border-l-[12px] flex justify-between items-center ${getStatusStyle(task.status).split(' ')[2]}`}>
+              <div className="flex-1">
                 <h3 className="text-xl font-bold text-gray-800">{task.title}</h3>
-                <p className="text-gray-600">{task.description}</p>
-                <span className={`text-xs font-bold uppercase px-3 py-1 rounded-full mt-2 inline-block ${getStatusStyle(task.status)}`}>
-                  {task.status}
-                </span>
+                <p className="text-gray-600 mb-2">{task.description}</p>
+                
+                <div className="flex items-center gap-4">
+                  <span className={`text-xs font-bold uppercase px-3 py-1 rounded-full ${getStatusStyle(task.status)}`}>
+                    {task.status}
+                  </span>
+                  
+                  {/* 📅 Due Date is added here */}
+                  {task.dueDate && (
+                    <span className="text-purple-900 text-xs font-semibold bg-purple-100 px-2 py-1 rounded-lg">
+                      📅 {new Date(task.dueDate).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
               </div>
-              <div className="flex gap-4">
-                <button onClick={() => { setEditingTask(task); setShowForm(true); }} className="text-blue-500 hover:scale-110 transition">✏️</button>
-                <button onClick={() => handleDelete(task._id)} className="text-red-500 hover:scale-110 transition">🗑️</button>
+              
+              <div className="flex gap-4 ml-4">
+                <button onClick={() => { setEditingTask(task); setShowForm(true); }} className="text-blue-500 hover:scale-120 transition">✏️</button>
+                <button onClick={() => handleDelete(task._id)} className="text-red-500 hover:scale-120 transition">🗑️</button>
               </div>
             </div>
           ))}
           
           {filteredTasks.length === 0 && (
-            <p className="text-center text-gray-500 mt-10">No tasks found matching your search.</p>
+            <p className="text-white text-center mt-10 text-lg font-medium opacity-90">
+              No tasks found matching your search.
+            </p>
           )}
         </div>
       </div>
